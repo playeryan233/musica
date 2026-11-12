@@ -1,0 +1,57 @@
+{
+  "name": "musica",
+  "version": "0.1.0",
+  "description": "个人练琴网站：五线谱 / 六线谱展示、按 BPM 自动跟谱、有声节拍器。",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "author": "yan",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/playeryan233/musica.git"
+  },
+  "bugs": {
+    "url": "https://github.com/playeryan233/musica/issues"
+  },
+  "keywords": [
+    "music",
+    "guitar",
+    "musicxml",
+    "alphatab",
+    "metronome",
+    "practice"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:pages": "npm run build && node scripts/make-404.cjs",
+    "deploy": "bash scripts/deploy.sh",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "npm run build && playwright test",
+    "verify:scores": "node scripts/verify-scores.cjs",
+    "check": "npm run build && npm test && npm run verify:scores"
+  },
+  "dependencies": {
+    "@coderline/alphatab": "^1.9.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5"
+  },
+  "devDependencies": {
+    "@coderline/alphatab-vite": "^1.9.0",
+    "@playwright/test": "^1.65.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "jsdom": "^31.0.0",
+    "playwright": "^1.64.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
+  }
+}

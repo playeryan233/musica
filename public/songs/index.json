@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "songs": [
+    {
+      "id": "practice-001",
+      "title": "C 大调音阶练习",
+      "artist": "Musica 练习曲",
+      "scoreUrl": "songs/practice-001/score.musicxml",
+      "format": "musicxml",
+      "defaultBpm": 60,
+      "defaultTrackIndex": 0,
+      "availableViews": ["standard"],
+      "practiceStructure": "linear"
+    },
+    {
+      "id": "practice-002",
+      "title": "C 大调琶音拨弦练习",
+      "artist": "Musica 练习曲",
+      "scoreUrl": "songs/practice-002/score.musicxml",
+      "format": "musicxml",
+      "defaultBpm": 80,
+      "defaultTrackIndex": 0,
+      "availableViews": ["tablature"],
+      "practiceStructure": "linear"
+    },
+    {
+      "id": "practice-003",
+      "title": "G 大调三拍子琶音练习",
+      "artist": "Musica 练习曲",
+      "scoreUrl": "songs/practice-003/score.musicxml",
+      "format": "musicxml",
+      "defaultBpm": 90,
+      "defaultTrackIndex": 0,
+      "availableViews": ["standard"],
+      "practiceStructure": "linear"
+    }
+  ]
+}

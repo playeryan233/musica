@@ -1,0 +1,25 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# 只给路由做回退：静态文件（/songs/index.json、/assets/*）由 Netlify 优先命中，
+# 缺失时仍是真 404，不会退化成 index.html。
+[[redirects]]
+  from = "/songs/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/metronome"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
