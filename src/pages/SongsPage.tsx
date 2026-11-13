@@ -10,6 +10,7 @@ import { SongRepository } from '../features/songs/songRepository';
 import { SongList } from '../features/songs/SongList';
 import { SongSearch } from '../features/songs/SongSearch';
 import type { ScoreView, SongManifest, SongMetadata } from '../features/songs/types';
+import { SiteHeader } from '../shared/SiteHeader';
 import { useSpaceToggle } from '../shared/useSpaceToggle';
 
 /** Coalesce rapid slider changes into one localStorage write. */
@@ -191,16 +192,7 @@ function SongPractice({ manifest }: { manifest: SongManifest }) {
 
   return (
     <main className="songs-layout">
-      <header className="songs-topbar">
-        <Link className="brand" to="/">
-          Musica
-        </Link>
-        <nav className="songs-topbar-links">
-          <Link to="/">首页</Link>
-          <Link to="/songs">歌曲</Link>
-          <Link to="/metronome">节拍器</Link>
-        </nav>
-      </header>
+      <SiteHeader />
 
       <div className="songs-body">
         <aside className="songs-sidebar">

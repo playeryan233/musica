@@ -1,5 +1,4 @@
 import { useEffect, useState, type CSSProperties } from 'react';
-import { Link } from 'react-router-dom';
 import { TIMBRE_IDS, TIMBRE_LABELS } from '../features/audio/timbres';
 import { PatternEditor } from '../features/metronome/PatternEditor';
 import { ScrollPicker, type PickerOption } from '../features/metronome/ScrollPicker';
@@ -21,6 +20,7 @@ import {
   type NoteSpeed,
   type Subdivision,
 } from '../features/metronome/types';
+import { SiteHeader } from '../shared/SiteHeader';
 import { useSpaceToggle } from '../shared/useSpaceToggle';
 
 function range(min: number, max: number): number[] {
@@ -165,18 +165,7 @@ export function MetronomePage() {
 
   return (
     <main className="metronome-page">
-      <header className="songs-topbar">
-        <Link className="brand" to="/">
-          Musica
-        </Link>
-        <nav className="songs-topbar-links">
-          <Link to="/">首页</Link>
-          <Link to="/songs">歌曲</Link>
-          <Link to="/metronome" aria-current="page">
-            节拍器
-          </Link>
-        </nav>
-      </header>
+      <SiteHeader />
 
       <div className="metronome-content">
         <section className="metronome-intro">

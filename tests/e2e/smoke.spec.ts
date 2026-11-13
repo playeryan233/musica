@@ -78,3 +78,22 @@ test('空格键只在没有聚焦控件时切换播放', async ({ page }) => {
   await page.keyboard.press('Space');
   await expect(page.getByRole('button', { name: '暂停' })).toBeVisible();
 });
+
+test('每个页面使用同一个顶栏并高亮当前页', async ({ page }) => {
+  const pages = [
+    { path: '/', active: '首页' },
+    { path: '/songs', active: '歌曲' },
+    { path: '/songs/practice-001', active: '歌曲' },
+    { path: '/metronome', active: '节拍器' },
+  ];
+
+  for (const { path, active } of pages) {
+    await page.goto(path);
+    const header = page.locator('header.site-header');
+    await expect(header).toBeVisible();
+    await expect(header.locator('.site-brand')).toHaveAttribute('href', '/');
+    await expect(header.locator('nav a')).toHaveText(['首页', '歌曲', '节拍器']);
+    // Exactly one link carries the current-page marker, whatever the route.
+    await expect(header.locator('[aria-current="page"]')).toHaveText(active);
+  }
+});
