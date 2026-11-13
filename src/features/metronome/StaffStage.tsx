@@ -12,7 +12,7 @@ import {
   MUSIC_GLYPHS,
   ensureBravuraFont,
   timeSigGlyph,
-} from './bravura';
+} from '../../shared/bravura';
 import { buildPitchMap } from './pitch';
 import { clickKindAtStep, stepCount } from './pattern';
 import type { BeatUnit, ClickKind, MetronomePattern, Playhead, Subdivision } from './types';

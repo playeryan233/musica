@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Link, RouterProvider } from 'react-router-dom';
 import { HomePage } from '../pages/HomePage';
 import { MetronomePage } from '../pages/MetronomePage';
+import { ClickNotes } from '../shared/ClickNotes';
 
 const SongsPage = lazy(() => import('../pages/SongsPage').then((m) => ({ default: m.SongsPage })));
 
@@ -58,5 +59,10 @@ const router = createBrowserRouter(
 );
 
 export function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <ClickNotes />
+    </>
+  );
 }

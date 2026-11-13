@@ -1,29 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ScrollingStaff } from '../features/home/ScrollingStaff';
 import { preferenceRepository } from '../features/preferences/preferenceRepository';
 import { SongRepository } from '../features/songs/songRepository';
 import type { SongManifest } from '../features/songs/types';
 import { SiteHeader } from '../shared/SiteHeader';
-
-function SheetPreview() {
-  return (
-    <div className="sheet-preview" aria-hidden="true">
-      <div className="sheet-preview-lines" />
-      <span className="sheet-note" style={{ left: '18%' }}>
-        ♩
-      </span>
-      <span className="sheet-note" style={{ left: '38%' }}>
-        ♪
-      </span>
-      <span className="sheet-note" style={{ left: '58%' }}>
-        ♫
-      </span>
-      <span className="sheet-note" style={{ left: '78%' }}>
-        ♩
-      </span>
-    </div>
-  );
-}
 
 export function HomePage() {
   const [lastSong, setLastSong] = useState<SongManifest['songs'][number] | null>(null);
@@ -52,28 +33,28 @@ export function HomePage() {
 
       <div className="home-content">
         <section className="hero">
-          <div className="hero-copy">
-            <h1>跟随乐谱练琴，跟着节拍前进</h1>
-            <p>
-              展示五线谱与六线谱，按你的速度自动高亮并滚动，配合有声节拍器，把注意力留给手和耳。
-            </p>
-            <div className="hero-actions">
-              <Link className="btn btn-primary btn-lg" to="/songs">
-                开始练习
+          <p className="hero-eyebrow">个人练琴台</p>
+          <h1>跟随乐谱练琴，跟着节拍前进</h1>
+          <p className="hero-lead">
+            展示五线谱与六线谱，按你的速度自动高亮并滚动，配合有声节拍器，把注意力留给手和耳。
+          </p>
+          <div className="hero-actions">
+            <Link className="btn btn-primary btn-lg" to="/songs">
+              开始练习
+            </Link>
+            {lastSong ? (
+              <Link className="btn btn-lg" to={`/songs/${lastSong.id}`}>
+                继续练习 · {lastSong.title}
               </Link>
-              {lastSong ? (
-                <Link className="btn btn-lg" to={`/songs/${lastSong.id}`}>
-                  继续练习 · {lastSong.title}
-                </Link>
-              ) : (
-                <Link className="btn btn-lg" to="/songs">
-                  选择歌曲
-                </Link>
-              )}
-            </div>
+            ) : (
+              <Link className="btn btn-lg" to="/songs">
+                选择歌曲
+              </Link>
+            )}
           </div>
-          <SheetPreview />
         </section>
+
+        <ScrollingStaff />
 
         <section className="features">
           <div className="feature">

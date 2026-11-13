@@ -97,3 +97,69 @@ test('每个页面使用同一个顶栏并高亮当前页', async ({ page }) => 
     await expect(header.locator('[aria-current="page"]')).toHaveText(active);
   }
 });
+
+test('导航栏居中且悬停会放大对应选项', async ({ page }) => {
+  await page.goto('/');
+
+  const offset = await page.evaluate(() => {
+    const header = document.querySelector('header.site-header');
+    const nav = header?.querySelector('nav');
+    if (!header || !nav) return 999;
+    const h = header.getBoundingClientRect();
+    const n = nav.getBoundingClientRect();
+    return Math.abs(n.left + n.width / 2 - (h.left + h.width / 2));
+  });
+  expect(offset).toBeLessThan(2);
+
+  const link = page.getByRole('link', { name: '歌曲', exact: true });
+  await link.hover();
+  await expect
+    .poll(async () => {
+      const transform = await link.evaluate((el) => getComputedStyle(el).transform);
+      if (transform === 'none') return 1;
+      return Number(/matrix\(([^,]+)/.exec(transform)?.[1] ?? 1);
+    })
+    .toBeGreaterThan(1.1);
+});
+
+test('点击页面会飘出随机音符并淡出', async ({ page }) => {
+  await page.goto('/');
+  // Wait until the click layer is mounted (its effect attaches the listener).
+  await expect(page.locator('.click-note-preload')).toBeAttached();
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await page.waitForTimeout(200);
+
+  await page.mouse.click(200, 170);
+
+  const note = page.locator('.click-note');
+  await expect(note.first()).toBeVisible();
+  await expect(note).toHaveCount(0, { timeout: 3000 });
+});
+
+test('首页有持续滚动的随机乐谱', async ({ page }) => {
+  await page.goto('/');
+
+  const staff = page.locator('.home-staff');
+  await expect(staff).toBeVisible();
+  await expect(staff.locator('.home-staff-head').first()).toBeVisible();
+
+  const track = page.locator('.home-staff-track');
+  const started = await track.evaluate((el) => getComputedStyle(el).transform);
+  await expect
+    .poll(async () => track.evaluate((el) => getComputedStyle(el).transform), { timeout: 4000 })
+    .not.toBe(started);
+});
+
+test('D 大调卡农出现在曲库且可以直接打开', async ({ page }) => {
+  const problems = trackProblems(page);
+
+  await page.goto('/songs');
+  await expect(page.locator('.song-list')).toContainText('D 大调卡农');
+
+  await page.goto('/songs/practice-004');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('D 大调卡农');
+  await expect(page.getByRole('button', { name: '开始练习' })).toBeEnabled();
+  await expect.poll(() => page.evaluate(() => document.fonts.check('16px Bravura'))).toBe(true);
+
+  expect(problems).toEqual([]);
+});

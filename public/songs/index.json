@@ -33,6 +33,17 @@
       "defaultTrackIndex": 0,
       "availableViews": ["standard"],
       "practiceStructure": "linear"
+    },
+    {
+      "id": "practice-004",
+      "title": "D 大调卡农",
+      "artist": "帕赫贝尔",
+      "scoreUrl": "songs/practice-004/score.musicxml",
+      "format": "musicxml",
+      "defaultBpm": 72,
+      "defaultTrackIndex": 0,
+      "availableViews": ["standard"],
+      "practiceStructure": "linear"
     }
   ]
 }

@@ -128,9 +128,9 @@ button {
 
 /* Site header — one bar shared by every page */
 .site-header {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 12px 20px;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
@@ -142,18 +142,35 @@ button {
   letter-spacing: 0.02em;
 }
 
+/* Centred in the bar regardless of the brand width. */
 .site-nav {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
-  gap: 16px;
+  gap: 28px;
   color: var(--muted);
 }
 
 .site-nav a {
-  transition: color 0.12s ease;
+  display: inline-block;
+  padding: 2px 1px;
+  transform-origin: 50% 50%;
+  transition:
+    color 0.12s ease,
+    transform 0.16s ease-out;
+  will-change: transform;
 }
 
 .site-nav a:hover {
   color: var(--text);
+}
+
+.site-nav a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 .site-nav a[aria-current='page'],
@@ -162,32 +179,119 @@ button {
   font-weight: 600;
 }
 
+@media (max-width: 520px) {
+  .site-header {
+    padding: 10px 14px;
+  }
+
+  .site-brand {
+    font-size: 17px;
+  }
+
+  .site-nav {
+    gap: 16px;
+  }
+
+  .site-nav a {
+    font-size: 14px;
+  }
+}
+
+/* Decorative notes that float out of a click. */
+.click-notes {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.click-note {
+  position: absolute;
+  font-family: 'Bravura', serif;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  user-select: none;
+  animation: click-note-float 900ms cubic-bezier(0.2, 0.62, 0.36, 1) forwards;
+}
+
+/* Off-screen, invisible glyphs that trigger the webfont download. */
+.click-note-preload {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  font-family: 'Bravura', serif;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes click-note-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.55) rotate(0deg);
+  }
+
+  14% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(var(--peak, 1)) rotate(0deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dx, 72px)), calc(-50% + var(--dy, -120px)))
+      scale(calc(var(--peak, 1) * 0.9)) rotate(var(--rot, 0deg));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .click-notes {
+    display: none;
+  }
+}
+
 /* Home */
+.home {
+  background:
+    radial-gradient(760px 420px at 8% -4%, rgba(245, 158, 11, 0.13), transparent 70%),
+    radial-gradient(660px 360px at 98% 2%, rgba(180, 83, 9, 0.07), transparent 72%);
+}
+
 .home-content {
-  padding: 24px 32px 56px;
   max-width: 1080px;
   margin: 0 auto;
+  padding: 0 32px 72px;
 }
 
 .hero {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 40px;
-  align-items: center;
-  padding: 40px 0 56px;
+  max-width: 720px;
+  padding: 72px 0 44px;
+}
+
+.hero-eyebrow {
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
 }
 
 .hero h1 {
-  font-size: 34px;
-  line-height: 1.2;
-  margin: 0 0 16px;
+  font-size: 42px;
+  line-height: 1.16;
+  letter-spacing: -0.01em;
+  margin: 0 0 18px;
 }
 
-.hero-copy p {
+.hero-lead {
   color: var(--muted);
-  font-size: 17px;
-  max-width: 44ch;
-  margin: 0 0 24px;
+  font-size: 18px;
+  line-height: 1.65;
+  max-width: 46ch;
+  margin: 0 0 28px;
 }
 
 .hero-actions {
@@ -196,60 +300,134 @@ button {
   flex-wrap: wrap;
 }
 
-.sheet-preview {
+/* Endlessly scrolling random staff (decorative). */
+.home-staff {
   position: relative;
-  height: 180px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
+  height: 172px;
+  margin: 4px 0 44px;
   overflow: hidden;
 }
 
-.sheet-preview-lines {
+.home-staff-line {
   position: absolute;
-  top: 40px;
-  left: 24px;
-  right: 24px;
-  height: 60px;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 14px,
-    #c9c2b6 14px,
-    #c9c2b6 15px
-  );
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(74, 56, 38, 0.22);
 }
 
-.sheet-note {
+.home-staff-clip {
   position: absolute;
-  top: 44px;
-  font-size: 30px;
-  color: var(--text);
+  inset: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
 
+.home-staff:not(.is-font-ready) .home-staff-clip {
+  visibility: hidden;
+}
+
+.home-staff-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  animation: home-staff-marquee linear infinite;
+  will-change: transform;
+}
+
+.home-staff-note {
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+  color: #33261c;
+}
+
+.home-staff-head,
+.home-staff-flag {
+  font-family: 'Bravura', 'Noto Music', 'Bravura Text', serif;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.home-staff-head {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+}
+
+.home-staff-stem {
+  position: absolute;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.home-staff-flag {
+  position: absolute;
+  color: currentColor;
+}
+
+.home-staff-bar {
+  position: absolute;
+  width: 1.2px;
+  background: rgba(74, 56, 38, 0.38);
+}
+
+@keyframes home-staff-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(var(--shift, -3000px), 0, 0);
+  }
+}
+
+/* Borderless feature columns. */
 .features {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 32px;
 }
 
 .feature {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
+  padding: 0;
 }
 
 .feature h2 {
-  font-size: 17px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
   margin: 0 0 8px;
+}
+
+.feature h2::before {
+  content: '';
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
 }
 
 .feature p {
   color: var(--muted);
   font-size: 14px;
+  line-height: 1.6;
   margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-staff-track {
+    animation: none;
+  }
 }
 
 /* Songs layout */
@@ -592,11 +770,29 @@ button {
   }
 
   .hero {
-    grid-template-columns: 1fr;
+    padding: 48px 0 32px;
+  }
+
+  .hero h1 {
+    font-size: 30px;
+  }
+
+  .hero-lead {
+    font-size: 16px;
+  }
+
+  .home-content {
+    padding: 0 16px 48px;
+  }
+
+  .home-staff {
+    height: 132px;
+    margin-bottom: 32px;
   }
 
   .features {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
 
   .practice-controls {
@@ -624,7 +820,8 @@ button {
 .metronome-page .site-header {
   background: transparent;
   border-bottom: 0;
-  padding: 18px 24px 0;
+  /* Symmetric padding keeps the centred nav on the same line as the brand. */
+  padding: 16px 24px;
 }
 
 .metronome-content {
@@ -1784,7 +1981,7 @@ button {
 
 @media (max-width: 720px) {
   .metronome-page .site-header {
-    padding: 14px 16px 0;
+    padding: 12px 16px;
   }
 
   .metronome-content {

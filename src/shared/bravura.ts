@@ -29,6 +29,11 @@ export const MUSIC_GLYPHS = {
   flag32ndDown: codePoint(0xe245),
   tuplet3: codePoint(0xe883),
   accentAbove: codePoint(0xe4a0),
+  // Standalone note glyphs (notehead + stem + flags drawn by the font). Handy
+  // for small decorative notes where composing head/stem/flag is overkill.
+  metNoteQuarterUp: codePoint(0xe1d5),
+  metNoteEighthUp: codePoint(0xe1d7),
+  metNoteSixteenthUp: codePoint(0xe1d9),
 } as const;
 
 /** Number glyph for a time-signature digit (0-9). */
