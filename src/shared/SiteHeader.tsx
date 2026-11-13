@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { BrandLogo } from './BrandLogo';
 
 /** How far (px) the pointer can be from an item's centre and still enlarge it. */
 const MAGNIFY_RADIUS = 96;
@@ -70,7 +71,11 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <Link className="site-brand" to="/">
-        Musica
+        <BrandLogo className="site-brand-mark" />
+        <span className="site-brand-name">Musica</span>
+        <span className="site-brand-note" aria-hidden="true">
+          🎵
+        </span>
       </Link>
       <nav className="site-nav" aria-label="主导航" ref={navRef}>
         {LINKS.map((link) => (

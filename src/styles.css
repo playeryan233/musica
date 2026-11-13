@@ -131,15 +131,40 @@ button {
   position: relative;
   display: flex;
   align-items: center;
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  padding: 18px 28px;
+  /* Blends into the page instead of sitting on it as a separate white bar. */
+  background: linear-gradient(
+    180deg,
+    #fffdf9 0%,
+    rgba(252, 245, 236, 0.82) 58%,
+    rgba(250, 247, 242, 0) 100%
+  );
 }
 
 .site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 700;
+  font-size: 21px;
+  letter-spacing: 0.01em;
+}
+
+.site-brand-mark {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  filter: drop-shadow(0 5px 10px rgba(124, 45, 18, 0.22));
+}
+
+.site-brand-name {
+  line-height: 1;
+}
+
+.site-brand-note {
   font-size: 18px;
-  letter-spacing: 0.02em;
+  line-height: 1;
+  transform: translateY(-1px);
 }
 
 /* Centred in the bar regardless of the brand width. */
@@ -149,13 +174,15 @@ button {
   top: 50%;
   transform: translate(-50%, -50%);
   display: flex;
-  gap: 28px;
+  gap: 34px;
+  font-size: 17px;
+  font-weight: 500;
   color: var(--muted);
 }
 
 .site-nav a {
   display: inline-block;
-  padding: 2px 1px;
+  padding: 3px 2px;
   transform-origin: 50% 50%;
   transition:
     color 0.12s ease,
@@ -181,19 +208,41 @@ button {
 
 @media (max-width: 520px) {
   .site-header {
-    padding: 10px 14px;
+    padding: 14px 16px;
   }
 
   .site-brand {
-    font-size: 17px;
+    gap: 8px;
+    font-size: 18px;
+  }
+
+  .site-brand-mark {
+    width: 30px;
+    height: 30px;
+  }
+
+  .site-brand-note {
+    font-size: 15px;
   }
 
   .site-nav {
-    gap: 16px;
+    gap: 18px;
+    font-size: 14px;
+  }
+}
+
+/* Below this width the brand and the centred nav would collide, so the bar
+   becomes two centred rows instead. */
+@media (max-width: 440px) {
+  .site-header {
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 16px 10px;
   }
 
-  .site-nav a {
-    font-size: 14px;
+  .site-nav {
+    position: static;
+    transform: none;
   }
 }
 
@@ -302,9 +351,10 @@ button {
 
 /* Endlessly scrolling random staff (decorative). */
 .home-staff {
+  --staff-space: 14px;
   position: relative;
-  height: 172px;
-  margin: 4px 0 44px;
+  height: 220px;
+  margin: 8px 0 52px;
   overflow: hidden;
 }
 
@@ -313,7 +363,7 @@ button {
   left: 0;
   right: 0;
   height: 1px;
-  background: rgba(74, 56, 38, 0.22);
+  background: rgba(74, 56, 38, 0.24);
 }
 
 .home-staff-clip {
@@ -334,7 +384,6 @@ button {
   left: 0;
   width: 0;
   height: 100%;
-  animation: home-staff-marquee linear infinite;
   will-change: transform;
 }
 
@@ -344,6 +393,12 @@ button {
   width: 0;
   height: 0;
   color: #33261c;
+  transition: color 160ms ease;
+}
+
+/* The invisible hit line lights the note with a pitch-derived colour. */
+.home-staff-note.is-hit {
+  color: var(--note-color, var(--accent));
 }
 
 .home-staff-head,
@@ -359,18 +414,29 @@ button {
   position: absolute;
   left: 0;
   top: 0;
+  font-size: calc(3.6 * var(--staff-space));
   transform: translate(-50%, -50%);
 }
 
 .home-staff-stem {
   position: absolute;
+  width: calc(0.12 * var(--staff-space));
   border-radius: 1px;
   background: currentColor;
 }
 
 .home-staff-flag {
   position: absolute;
+  font-size: calc(4 * var(--staff-space));
   color: currentColor;
+}
+
+.home-staff-beam {
+  position: absolute;
+  height: calc(0.46 * var(--staff-space));
+  border-radius: 1px;
+  background: currentColor;
+  transform-origin: left top;
 }
 
 .home-staff-bar {
@@ -379,13 +445,55 @@ button {
   background: rgba(74, 56, 38, 0.38);
 }
 
-@keyframes home-staff-marquee {
-  from {
-    transform: translate3d(0, 0, 0);
+.home-staff-note.is-hit .home-staff-head {
+  animation: home-note-hit 420ms ease-out;
+}
+
+@keyframes home-note-hit {
+  0% {
+    scale: 1;
+    filter: drop-shadow(0 0 0 transparent);
   }
 
-  to {
-    transform: translate3d(var(--shift, -3000px), 0, 0);
+  30% {
+    scale: 1.45;
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+
+  100% {
+    scale: 1;
+    filter: drop-shadow(0 0 0 transparent);
+  }
+}
+
+.home-staff-burst {
+  position: absolute;
+  z-index: 4;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.home-staff-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  opacity: 0;
+  animation: home-staff-particle-fly 620ms ease-out forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes home-staff-particle-fly {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.95;
+  }
+
+  100% {
+    transform: translate(var(--dx, 0px), var(--dy, -24px)) scale(0.15);
+    opacity: 0;
   }
 }
 
@@ -786,8 +894,8 @@ button {
   }
 
   .home-staff {
-    height: 132px;
-    margin-bottom: 32px;
+    height: 190px;
+    margin-bottom: 36px;
   }
 
   .features {
@@ -815,13 +923,6 @@ button {
     radial-gradient(900px 460px at 12% -8%, rgba(245, 158, 11, 0.16), transparent 62%),
     radial-gradient(760px 420px at 92% 2%, rgba(180, 83, 9, 0.1), transparent 60%),
     linear-gradient(180deg, #fdfbf7 0%, #faf7f2 46%, #f5efe6 100%);
-}
-
-.metronome-page .site-header {
-  background: transparent;
-  border-bottom: 0;
-  /* Symmetric padding keeps the centred nav on the same line as the brand. */
-  padding: 16px 24px;
 }
 
 .metronome-content {
@@ -1980,10 +2081,6 @@ button {
 }
 
 @media (max-width: 720px) {
-  .metronome-page .site-header {
-    padding: 12px 16px;
-  }
-
   .metronome-content {
     padding: 20px 16px 32px;
     gap: 14px;

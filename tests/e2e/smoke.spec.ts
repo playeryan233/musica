@@ -111,6 +111,10 @@ test('导航栏居中且悬停会放大对应选项', async ({ page }) => {
   });
   expect(offset).toBeLessThan(2);
 
+  // The brand carries the logo mark and the note emoji.
+  await expect(page.locator('.site-brand svg')).toBeVisible();
+  await expect(page.locator('.site-brand')).toContainText('🎵');
+
   const link = page.getByRole('link', { name: '歌曲', exact: true });
   await link.hover();
   await expect
@@ -148,6 +152,20 @@ test('首页有持续滚动的随机乐谱', async ({ page }) => {
   await expect
     .poll(async () => track.evaluate((el) => getComputedStyle(el).transform), { timeout: 4000 })
     .not.toBe(started);
+
+  // Consecutive notes are beamed, and notes that reached the invisible hit
+  // line switch to a bright colour derived from their pitch.
+  await expect(staff.locator('.home-staff-beam').first()).toBeVisible();
+  const lit = staff.locator('.home-staff-note.is-hit .home-staff-head').first();
+  await expect(lit).toBeVisible();
+  // The colour transition takes ~160ms, so poll instead of sampling once.
+  await expect
+    .poll(async () =>
+      lit
+        .evaluate((el) => (el.parentElement ? getComputedStyle(el.parentElement).color : ''))
+        .catch(() => ''),
+    )
+    .not.toBe('rgb(51, 38, 28)');
 });
 
 test('D 大调卡农出现在曲库且可以直接打开', async ({ page }) => {
