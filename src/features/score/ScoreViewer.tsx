@@ -13,6 +13,8 @@ interface ScoreViewerProps {
   zoom: number;
   autoFollow: boolean;
   transport: PracticeTransport;
+  /** Engine-independent load state, shown as an overlay until the score is ready. */
+  status: ScoreStatus;
   onTimeline: (timeline: PracticeTimeline) => void;
   onScoreStatus: (status: ScoreStatus, error?: string | null) => void;
   onManualScroll: () => void;
@@ -25,6 +27,7 @@ export function ScoreViewer({
   zoom,
   autoFollow,
   transport,
+  status,
   onTimeline,
   onScoreStatus,
   onManualScroll,
@@ -93,14 +96,45 @@ export function ScoreViewer({
       applyBar(currentBarRef.current);
     });
     const offBar = transport.barChange.on((index) => applyBar(index));
+    // 回到开头 drops the transport to `stopped`; the score itself has to go
+    // back to the top too, otherwise the overlay keeps showing bar 1 while the
+    // viewport stays scrolled down.
+    const offStatus = transport.statusChange.on((next) => {
+      if (next === 'stopped') scroll.reset();
+    });
 
-    const ro = new ResizeObserver(() => adapter.resizeRender());
+    // Coalesce ResizeObserver bursts into at most one re-render per frame and
+    // skip it entirely when the stage size did not actually change. Without
+    // this, every observation triggers an alphaTab layout pass (and each pass
+    // can observe again), which shows up as jitter while scrolling the page.
+    let rafId = 0;
+    let lastWidth = 0;
+    let lastHeight = 0;
+    const ro = new ResizeObserver(() => {
+      const stage = stageRef.current;
+      if (!stage) return;
+      const width = stage.clientWidth;
+      const height = stage.clientHeight;
+      if (width === lastWidth && height === lastHeight) return;
+      lastWidth = width;
+      lastHeight = height;
+      if (rafId !== 0) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        // `load()` renders the first layout at the size current at that moment,
+        // so resizing before a score exists needs no extra render.
+        if (adapter.hasScore) adapter.resizeRender();
+      });
+    });
     if (stageRef.current) ro.observe(stageRef.current);
 
     return () => {
       offLayout();
       offBar();
+      offStatus();
       ro.disconnect();
+      if (rafId !== 0) cancelAnimationFrame(rafId);
+      scroll.dispose();
       highlight.clear();
       adapter.destroy();
       adapterRef.current = null;
@@ -167,6 +201,12 @@ export function ScoreViewer({
         <div className="score-canvas" ref={alphaTabRef} />
         <div className="score-highlight" ref={overlayRef} aria-hidden="true" />
       </div>
+      {status !== 'ready' && (
+        <div className="score-loading" role="status">
+          <span className="score-loading-spinner" aria-hidden="true" />
+          <span>正在加载曲谱…</span>
+        </div>
+      )}
       {!autoFollow && (
         <button type="button" className="resume-follow" onClick={onResumeFollow}>
           恢复跟随

@@ -21,6 +21,7 @@ import {
   type NoteSpeed,
   type Subdivision,
 } from '../features/metronome/types';
+import { useSpaceToggle } from '../shared/useSpaceToggle';
 
 function range(min: number, max: number): number[] {
   return Array.from({ length: max - min + 1 }, (_, i) => min + i);
@@ -147,26 +148,8 @@ export function MetronomePage() {
     label: subdivisionLabel(pattern.beatUnit, value),
   }));
 
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.code !== 'Space') return;
-      const target = event.target as HTMLElement | null;
-      if (
-        target &&
-        (target.tagName === 'INPUT' ||
-          target.tagName === 'SELECT' ||
-          target.tagName === 'TEXTAREA' ||
-          target.tagName === 'BUTTON' ||
-          target.isContentEditable)
-      ) {
-        return;
-      }
-      event.preventDefault();
-      toggle();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [toggle]);
+  // Space toggles the metronome unless a focused control owns the key.
+  useSpaceToggle(toggle);
 
   const summary = `${BEAT_UNIT_SYMBOLS[pattern.beatUnit]} = ${settings.bpm} · ${
     pattern.beatsPerBar

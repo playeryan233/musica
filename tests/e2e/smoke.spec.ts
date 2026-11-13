@@ -60,3 +60,21 @@ test('节拍器可以开始播放', async ({ page }) => {
 
   expect(problems).toEqual([]);
 });
+
+test('空格键只在没有聚焦控件时切换播放', async ({ page }) => {
+  await page.goto('/songs/practice-001');
+
+  const play = page.getByRole('button', { name: '开始练习' });
+  await expect(play).toBeEnabled();
+
+  // A focused button owns the space key: it activates that button instead of
+  // toggling playback (the "回到开头" button is a harmless no-op here).
+  await page.getByRole('button', { name: '回到开头' }).focus();
+  await page.keyboard.press('Space');
+  await expect(play).toBeVisible();
+
+  // With focus outside any control, the global shortcut still works.
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+  await page.keyboard.press('Space');
+  await expect(page.getByRole('button', { name: '暂停' })).toBeVisible();
+});

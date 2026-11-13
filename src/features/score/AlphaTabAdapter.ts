@@ -79,6 +79,10 @@ export class AlphaTabAdapter implements ScoreAdapter {
     this.api?.renderer.resizeRender();
   }
 
+  get hasScore(): boolean {
+    return this.scoreLoaded;
+  }
+
   getTimelineSource(): TimelineSource | null {
     return this.timelineSource;
   }

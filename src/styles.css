@@ -460,6 +460,42 @@ button {
   font-size: 14px;
 }
 
+/* Covers the score area until the first layout is ready; never blocks clicks. */
+.score-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.score-loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: score-loading-spin 0.8s linear infinite;
+}
+
+@keyframes score-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .score-loading-spinner {
+    animation: none;
+  }
+}
+
 /* Practice controls */
 .songs-controls {
   border-top: 1px solid var(--border);

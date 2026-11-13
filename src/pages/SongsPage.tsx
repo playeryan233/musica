@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PracticeProvider, usePractice, type SongInit } from '../features/practice/PracticeProvider';
 import { PracticeControls } from '../features/practice/PracticeControls';
@@ -10,6 +10,10 @@ import { SongRepository } from '../features/songs/songRepository';
 import { SongList } from '../features/songs/SongList';
 import { SongSearch } from '../features/songs/SongSearch';
 import type { ScoreView, SongManifest, SongMetadata } from '../features/songs/types';
+import { useSpaceToggle } from '../shared/useSpaceToggle';
+
+/** Coalesce rapid slider changes into one localStorage write. */
+const PREFERENCE_SAVE_DEBOUNCE_MS = 200;
 
 export function SongsPage() {
   const [manifest, setManifest] = useState<SongManifest | null>(null);
@@ -113,32 +117,43 @@ function SongPractice({ manifest }: { manifest: SongManifest }) {
     preferenceRepository.setLastSong(song.id);
   }, [song, initForSong]);
 
-  // Persist global settings.
+  // Global settings are saved on a short debounce: dragging the volume slider
+  // fires dozens of changes and each one would otherwise hit localStorage. The
+  // latest values are flushed on unmount so a quick navigation never loses the
+  // last edit. `initForSong` already persists the per-song entry.
+  const latestGlobal = useRef({
+    metronomeEnabled: state.metronomeEnabled,
+    metronomeVolume: state.metronomeVolume,
+    autoFollow: state.autoFollow,
+  });
+
+  // Declared before the debounce effect so it runs first in the same commit and
+  // the timeout always reads the values of the current render.
   useEffect(() => {
-    const prefs = preferenceRepository.load();
-    prefs.global.metronomeEnabled = state.metronomeEnabled;
-    prefs.global.metronomeVolume = state.metronomeVolume;
-    prefs.global.autoFollow = state.autoFollow;
-    preferenceRepository.save(prefs);
+    latestGlobal.current = {
+      metronomeEnabled: state.metronomeEnabled,
+      metronomeVolume: state.metronomeVolume,
+      autoFollow: state.autoFollow,
+    };
   }, [state.metronomeEnabled, state.metronomeVolume, state.autoFollow]);
 
-  // Spacebar toggles play, unless typing in an input.
+  const persistGlobal = useCallback((global: typeof latestGlobal.current) => {
+    const prefs = preferenceRepository.load();
+    prefs.global.metronomeEnabled = global.metronomeEnabled;
+    prefs.global.metronomeVolume = global.metronomeVolume;
+    prefs.global.autoFollow = global.autoFollow;
+    preferenceRepository.save(prefs);
+  }, []);
+
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.code !== 'Space') return;
-      const t = e.target as HTMLElement | null;
-      if (
-        t &&
-        (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)
-      ) {
-        return;
-      }
-      e.preventDefault();
-      togglePlay();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [togglePlay]);
+    const id = window.setTimeout(() => persistGlobal(latestGlobal.current), PREFERENCE_SAVE_DEBOUNCE_MS);
+    return () => window.clearTimeout(id);
+  }, [state.metronomeEnabled, state.metronomeVolume, state.autoFollow, persistGlobal]);
+
+  useEffect(() => () => persistGlobal(latestGlobal.current), [persistGlobal]);
+
+  // Space toggles play/pause; it never steals the key from a focused control.
+  useSpaceToggle(togglePlay);
 
   const selectSong = useCallback(
     (s: SongMetadata) => {
@@ -236,6 +251,7 @@ function SongPractice({ manifest }: { manifest: SongManifest }) {
                   zoom={state.zoom}
                   autoFollow={state.autoFollow}
                   transport={transport}
+                  status={state.scoreStatus}
                   onTimeline={setTimeline}
                   onScoreStatus={setScoreStatus}
                   onManualScroll={() => setAutoFollow(false)}
