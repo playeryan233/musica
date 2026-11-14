@@ -761,7 +761,7 @@ export function StaffStage({
   };
 
   const liveBeat = playing && playhead ? playhead.beat + 1 : 1;
-  const hint = playing ? `第 ${(playhead?.bar ?? 0) + 1} 小节` : '点击开始';
+  const barLabel = playing && playhead ? `第 ${playhead.bar + 1} 小节` : null;
 
   const clefTop = layout.space - layout.clefEm / 2;
   const numeratorTop = -layout.space - layout.sigEm / 2;
@@ -909,7 +909,7 @@ export function StaffStage({
         <span className="staff-beat" key={playhead?.step ?? 'idle'}>
           {liveBeat}
         </span>
-        <span className="staff-bar">{hint}</span>
+        {barLabel && <span className="staff-bar">{barLabel}</span>}
       </div>
     </section>
   );

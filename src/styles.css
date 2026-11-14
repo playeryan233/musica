@@ -958,12 +958,6 @@ button {
   letter-spacing: -0.02em;
 }
 
-.metronome-intro p {
-  margin: 0;
-  max-width: 90ch;
-  font-size: 15px;
-}
-
 .signature-chip {
   padding: 4px 10px;
   border-radius: 999px;
@@ -1069,10 +1063,6 @@ button {
   color: var(--accent-strong);
 }
 
-.bpm-meta .muted {
-  font-size: 11px;
-}
-
 .bpm-range {
   -webkit-appearance: none;
   appearance: none;
@@ -1175,11 +1165,6 @@ button {
 .tap-icon {
   font-size: 14px;
   line-height: 1;
-}
-
-.metronome-hint {
-  margin: 0;
-  font-size: 12px;
 }
 
 /* Staff stage */
@@ -1549,11 +1534,6 @@ button {
   box-shadow: 0 0 0 4px rgba(180, 83, 9, 0.12);
 }
 
-.dash-hint {
-  margin: 0;
-  font-size: 11px;
-}
-
 /* Scroll pickers */
 .picker {
   display: flex;
@@ -1729,12 +1709,6 @@ button {
   letter-spacing: 0.06em;
 }
 
-.pattern-drawer-hint {
-  margin-left: auto;
-  font-size: 12px;
-  color: var(--muted);
-}
-
 .pattern-drawer-body {
   display: flex;
   flex-direction: column;
@@ -1743,11 +1717,6 @@ button {
 }
 
 /* Panels */
-.panel-hint {
-  margin: -4px 0 0;
-  font-size: 12px;
-}
-
 /* Pattern grid */
 .pattern-grid {
   display: flex;

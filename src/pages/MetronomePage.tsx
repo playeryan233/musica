@@ -10,7 +10,6 @@ import {
   BEATS_PER_BAR_MAX,
   BEATS_PER_BAR_MIN,
   BEAT_UNITS,
-  BEAT_UNIT_LABELS,
   BEAT_UNIT_SYMBOLS,
   BPM_MAX,
   BPM_MIN,
@@ -153,7 +152,7 @@ export function MetronomePage() {
 
   const summary = `${BEAT_UNIT_SYMBOLS[pattern.beatUnit]} = ${settings.bpm} · ${
     pattern.beatsPerBar
-  }/${pattern.beatUnit} · 每拍 ${subdivisionLabel(pattern.beatUnit, pattern.subdivision)}`;
+  }/${pattern.beatUnit}`;
 
   const statusText = !playing
     ? '未开始'
@@ -171,9 +170,6 @@ export function MetronomePage() {
         <section className="metronome-intro">
           <span className="metro-eyebrow">Metronome · 练习工具</span>
           <h1>独立节拍器</h1>
-          <p className="muted">
-            音符滑向节拍线，抵达时只有符头亮起并迸出粒子；重音不闪烁。速度、拍号、时值与音色在下方滚动切换。
-          </p>
         </section>
 
         <StaffStage
@@ -220,7 +216,6 @@ export function MetronomePage() {
               <span className="bpm-note">
                 {BEAT_UNIT_SYMBOLS[pattern.beatUnit]} = {settings.bpm}
               </span>
-              <span className="muted">以{BEAT_UNIT_LABELS[pattern.beatUnit]}为一拍</span>
             </div>
 
             <input
@@ -242,7 +237,6 @@ export function MetronomePage() {
                 </span>
                 点击测速
               </button>
-              <span className="metronome-hint muted">连续点击自动定速</span>
             </div>
           </section>
 
@@ -301,17 +295,14 @@ export function MetronomePage() {
               value={settings.timbre}
               onChange={setTimbre}
             />
-            <p className="dash-hint muted">音符速度只改变谱面观感，不改变节拍；音色从下一拍生效。</p>
           </section>
         </section>
 
         <details className="pattern-drawer">
           <summary>
             <span className="pattern-drawer-title">节奏图案</span>
-            <span className="pattern-drawer-hint">重音 · 静音 · 重置</span>
           </summary>
           <div className="pattern-drawer-body">
-            <p className="panel-hint muted">点击节拍切换状态；小节右侧可整节重音或静音。</p>
             <PatternEditor
               pattern={pattern}
               playing={playing}
